@@ -6,47 +6,47 @@ import "./App.css"
 export default function App() {
   const [city, setCity] = useState("")
   const [times, setTimes] = useState([])
-  const [nextPray, setNextPray] = useState({ name: "  ", dif: [0, 0] ,is:false})
+  const [nextPray, setNextPray] = useState({ name: "  ", dif: [0, 0], is: false })
   const [dateH, setDateH] = useState({ day: "", month: "", weekday: "", year: "" })
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        // get date
-        const today = new Date();
 
-        const day = String(today.getDate() ).padStart(2, '0');
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const year = today.getFullYear();
-        let todayDate = `${day}-${month}-${year}`
+  useEffect(() => {
+    const fetchData = async () => {
+      // get date
+      const today = new Date();
 
-        try {
-          //fetch data
-          let res = await fetch(`https://api.aladhan.com/v1/timingsByCity/${todayDate}?city=${city}&country=egypt&method=8`)
-          let fetchedData = await res.json()
-          // get hijri date
-          const daH = fetchedData.data.date.hijri
-          setDateH({ day: daH.day, weekday: daH.weekday.ar, month: daH.month.ar, year: daH.year })
-          // update times
-          setTimes(
-            [
-              { name: "الفَجْر", time: fetchedData.data.timings.Fajr },
-              { name: "الشُّرُوق", time: fetchedData.data.timings.Sunrise },
-              { name: "الظُّهْر", time: fetchedData.data.timings.Dhuhr },
-              { name: "العَصْر", time: fetchedData.data.timings.Asr },
-              { name: "المَغْرِب", time: fetchedData.data.timings.Maghrib },
-              { name: "العِشَاء", time: fetchedData.data.timings.Isha },
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      let todayDate = `${day}-${month}-${year}`
 
-            ]
-          )
-        }
-        catch (err) {
-          console.log(err)
-        }
+      try {
+        //fetch data
+        let res = await fetch(`https://api.aladhan.com/v1/timingsByCity/${todayDate}?city=${city}&country=egypt&method=8`)
+        let fetchedData = await res.json()
+        // get hijri date
+        const daH = fetchedData.data.date.hijri
+        setDateH({ day: daH.day, weekday: daH.weekday.ar, month: daH.month.ar, year: daH.year })
+        // update times
+        setTimes(
+          [
+            { name: "الفَجْر", time: fetchedData.data.timings.Fajr },
+            { name: "الشُّرُوق", time: fetchedData.data.timings.Sunrise },
+            { name: "الظُّهْر", time: fetchedData.data.timings.Dhuhr },
+            { name: "العَصْر", time: fetchedData.data.timings.Asr },
+            { name: "المَغْرِب", time: fetchedData.data.timings.Maghrib },
+            { name: "العِشَاء", time: fetchedData.data.timings.Isha },
+
+          ]
+        )
       }
-      fetchData()
-    }, [city])
+      catch (err) {
+        console.log(err)
+      }
+    }
+    fetchData()
+  }, [city])
 
-   
+
   // format form 24 to 12
   function formatTo12Hour(time24) {
     const [hourStr, minute] = time24.split(":");
@@ -72,7 +72,7 @@ export default function App() {
 
       if (times.length > 0) {
 
-        times.map( (item, i) => {
+        times.map((item, i) => {
           let time = item.time.split(":")
 
           if (i == 0) {
@@ -90,21 +90,22 @@ export default function App() {
               nearer.dif = iDif
             }
             else if (tDifM == 0) {
-              alert(`حان الان وقت صلاة العصر ${item.name} `)
+
               var audio = new Audio("019--1.mp3");
               audio.play();
+              alert(`حان الان وقت صلاة العصر ${item.name} `)
             }
           }
         })
         if (nearer.dif[0] * 60 + nearer.dif[1] < 0) {
-       
+
           nearer.dif = [23 + nearer.dif[0], 59 + nearer.dif[1]]
-          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is:true })
+          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is: true })
           console.log(nextPray)
 
         }
         else {
-          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is:false})
+          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is: false })
 
           console.log(nextPray)
 
@@ -176,9 +177,9 @@ export default function App() {
             ))}
           </select>
         </section>
-       <footer>
+        <footer>
           <h4>by <a href="https://www.facebook.com/profile.php?id=100093531259560&sfnsn=scwspmo&mibextid=RUbZ1f">Abdullah Talaat</a></h4>
-        </footer> 
+        </footer>
       </div>
 
     </main>
