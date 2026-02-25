@@ -6,22 +6,27 @@ import "./App.css"
 export default function App() {
   const [city, setCity] = useState("")
   const [times, setTimes] = useState([])
-  const [nextPray, setNextPray] = useState({ name: "  ", dif: [0, 0] })
+  const [nextPray, setNextPray] = useState({ name: "  ", dif: [0, 0] ,is:false})
   const [dateH, setDateH] = useState({ day: "", month: "", weekday: "", year: "" })
-  const useUpdate = (addDay) => {
+  
     useEffect(() => {
       const fetchData = async () => {
+        // get date
         const today = new Date();
 
-        const day = String(Number(today.getDate() + addDay)).padStart(2, '0');
+        const day = String(today.getDate() ).padStart(2, '0');
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const year = today.getFullYear();
         let todayDate = `${day}-${month}-${year}`
+
         try {
+          //fetch data
           let res = await fetch(`https://api.aladhan.com/v1/timingsByCity/${todayDate}?city=${city}&country=egypt&method=8`)
           let fetchedData = await res.json()
+          // get hijri date
           const daH = fetchedData.data.date.hijri
           setDateH({ day: daH.day, weekday: daH.weekday.ar, month: daH.month.ar, year: daH.year })
+          // update times
           setTimes(
             [
               { name: "الفَجْر", time: fetchedData.data.timings.Fajr },
@@ -41,10 +46,8 @@ export default function App() {
       fetchData()
     }, [city])
 
-
-
-  }
-  useUpdate(0)
+   
+  // format form 24 to 12
   function formatTo12Hour(time24) {
     const [hourStr, minute] = time24.split(":");
     let hour = parseInt(hourStr, 10);
@@ -56,7 +59,7 @@ export default function App() {
 
     return `${hour}:${minute} ${period}`;
   }
-
+  // get next time
   useEffect(() => {
     const getNearer = async () => {
 
@@ -69,7 +72,7 @@ export default function App() {
 
       if (times.length > 0) {
 
-        times.map(async (item, i) => {
+        times.map( (item, i) => {
           let time = item.time.split(":")
 
           if (i == 0) {
@@ -88,19 +91,20 @@ export default function App() {
             }
             else if (tDifM == 0) {
               alert(`حان الان وقت صلاة العصر ${item.name} `)
-
+              var audio = new Audio("019--1.mp3");
+              audio.play();
             }
           }
         })
         if (nearer.dif[0] * 60 + nearer.dif[1] < 0) {
        
           nearer.dif = [23 + nearer.dif[0], 59 + nearer.dif[1]]
-          setNextPray({ ...nextPray, name: nearer.name, dif: `≈ ${difToT(nearer.dif)[0]}:${difToT(nearer.dif)[1]}` })
+          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is:true })
           console.log(nextPray)
 
         }
         else {
-          setNextPray({ ...nextPray, name: nearer.name, dif: `${difToT(nearer.dif)[0]}:${difToT(nearer.dif)[1]}` })
+          setNextPray({ ...nextPray, name: nearer.name, dif: difToT(nearer.dif), is:false})
 
           console.log(nextPray)
 
