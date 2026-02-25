@@ -66,6 +66,9 @@ header h3{
   transform:translateY(-5px);
   border-color:#d4af37;
 }
+.is-next {
+  border:2px solid #d4af37;
+}
 
 .pray-card h3{
   font-size:1.3rem;
@@ -124,4 +127,12 @@ select{
   .pray-times{
     grid-template-columns:1fr;
   }
+}
+
+footer{
+  margin-top:30px;
+}
+a{
+  text-decoration: none;
+  color:#d4af37
 }
